@@ -1,8 +1,13 @@
 package com.example.paygoal.entities;
 
+import org.hibernate.validator.constraints.Range;
+
 import javax.persistence.*;
 
 import java.math.BigDecimal;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 @Entity
 @Table(name = "products")
 public class Product {
@@ -10,9 +15,15 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotEmpty
     private String name;
     private String description;
+    @NotNull
+    @Range(min = 1, message = "no puede estár vacío o nulo")
     private BigDecimal price;
+    @NotNull
+    @Range(min = 1, message = "no puede estár vacío o nulo")
     private Integer quantity;
 
     public Product() {
