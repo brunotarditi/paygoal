@@ -1,8 +1,11 @@
 package com.example.paygoal.services;
 
 import com.example.paygoal.dtos.MessageDto;
+import com.example.paygoal.dtos.ProductDto;
 import com.example.paygoal.entities.Product;
 import com.example.paygoal.exceptions.GenericException;
+import com.example.paygoal.factories.FactoryConvert;
+import com.example.paygoal.factories.ProductFactory;
 import com.example.paygoal.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,29 +13,37 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService{
     private final ProductRepository productRepository;
+    private final ProductFactory productFactory;
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, ProductFactory productFactory) {
         this.productRepository = productRepository;
+        this.productFactory = productFactory;
     }
 
 
     @Override
-    public List<Product> findByOrderByPrice() {
-        return productRepository.findByOrderByPrice();
+    public List<ProductDto> findByOrderByPrice() {
+        List<Product> products = productRepository.findByOrderByPrice();
+        return products.stream()
+                .map(productFactory::createDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Product findByIdOrName(Long id, String name) {
-        return productRepository.findByIdOrName(id, name).orElseThrow(() -> { throw new NoSuchElementException("No ha sido posible encontrar el producto."); });
+    public ProductDto findByIdOrName(Long id, String name) {
+        Product product = productRepository.findByIdOrName(id, name).orElseThrow(() -> { throw new NoSuchElementException("No ha sido posible encontrar el producto."); });
+        return productFactory.createDto(product);
     }
 
     @Override
-    public Product save(Product product) {
+    public Product save(ProductDto productDto) {
+        Product product = productFactory.createEntity(productDto);
         if (productRepository.existsProductByName(product.getName())){
             throw new GenericException("Ese nombre ya existe.");
         }
@@ -40,15 +51,15 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public Product update(Product product, Long id) {
+    public Product update(ProductDto productDto, Long id) {
         Product editProduct = productRepository.findById(id).orElseThrow(() -> {
             throw new NoSuchElementException("No puede editarse porque el producto no existe.");
         });
-        editProduct.setName(product.getName());
-        editProduct.setDescription(product.getDescription());
-        editProduct.setPrice(product.getPrice());
-        editProduct.setQuantity(product.getQuantity());
-        return editProduct;
+        editProduct.setName(productDto.getName());
+        editProduct.setDescription(productDto.getDescription());
+        editProduct.setPrice(productDto.getPrice());
+        editProduct.setQuantity(productDto.getQuantity());
+        return productRepository.save(editProduct);
     }
     @Override
     public MessageDto delete(Long id) {

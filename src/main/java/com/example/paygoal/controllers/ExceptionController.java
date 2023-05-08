@@ -15,13 +15,13 @@ import java.util.NoSuchElementException;
 public class ExceptionController extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = NoSuchElementException.class)
-    public ResponseEntity<ErrorResponse> notFoundException(NoSuchElementException exception) {
+    public ResponseEntity<ErrorResponse> handleNotFoundException(NoSuchElementException exception) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), exception.getMessage(), LocalDate.now());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = GenericException.class)
-    public ResponseEntity<ErrorResponse> nameExistException(GenericException exception) {
+    public ResponseEntity<ErrorResponse> handleNameExistException(GenericException exception) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_ACCEPTABLE.value(), exception.getMessage(), LocalDate.now());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_ACCEPTABLE);
     }

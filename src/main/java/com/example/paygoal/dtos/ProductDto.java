@@ -1,34 +1,28 @@
-package com.example.paygoal.entities;
+package com.example.paygoal.dtos;
 
+import org.hibernate.validator.constraints.Range;
 
-import javax.persistence.*;
-
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-@Entity
-@Table(name = "products")
-public class Product {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ProductDto {
     private Long id;
 
-    @Column(name = "name")
+    @NotEmpty
     private String name;
-
-    @Column(name = "description")
     private String description;
-
-    @Column(name = "price")
+    @NotNull
+    @Range(min = 1, message = "no puede estár vacío o nulo")
     private BigDecimal price;
-
-    @Column(name = "quantity")
+    @NotNull
+    @Range(min = 1, message = "no puede estár vacío o nulo")
     private Integer quantity;
 
-    public Product() {
+    public ProductDto() {
     }
 
-    public Product(Long id, String name, String description, BigDecimal price, Integer quantity) {
+    public ProductDto(Long id, String name, String description, BigDecimal price, Integer quantity) {
         this.id = id;
         this.name = name;
         this.description = description;

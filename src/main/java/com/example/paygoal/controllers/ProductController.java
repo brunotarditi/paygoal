@@ -1,5 +1,6 @@
 package com.example.paygoal.controllers;
 
+import com.example.paygoal.dtos.ProductDto;
 import com.example.paygoal.entities.Product;
 import com.example.paygoal.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,19 +35,19 @@ public class ProductController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> save(@Valid @RequestBody Product product, BindingResult result){
+    public ResponseEntity<?> save(@Valid @RequestBody ProductDto productDto, BindingResult result){
         if (result.hasErrors()){
             return validate(result);
         }
-        return new ResponseEntity<>(productService.save(product), HttpStatus.OK);
+        return new ResponseEntity<>(productService.save(productDto), HttpStatus.OK);
     }
 
     @PutMapping("/edit/{id}")
-    public ResponseEntity<?> edit(@PathVariable Long id, @Valid @RequestBody Product product,  BindingResult result){
+    public ResponseEntity<?> edit(@PathVariable Long id, @Valid @RequestBody ProductDto productDto,  BindingResult result){
         if (result.hasErrors()){
             return validate(result);
         }
-        return new ResponseEntity<>(productService.update(product, id), HttpStatus.OK);
+        return new ResponseEntity<>(productService.update(productDto, id), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
